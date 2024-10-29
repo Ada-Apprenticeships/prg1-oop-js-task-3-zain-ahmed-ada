@@ -2,24 +2,23 @@ PRIORITY = { LOW: 1, MEDIUM: 3, HIGH: 5, URGENT: 7 };
 
 function validInteger(value) {
 	// value can be a string or a number (integer)
-	if (typeof value === "number") {
-		return true;
-	} else {
-		return false;
-	}
+	const regex = /^[0-9]+$/;
+
+	const trimmedValue = String(value).trim();
+	return regex.test(trimmedValue) && Number(trimmedValue) >= 0;
 }
 
 function validatePriority(priority) {
-	if (priority === 1 || priority === "LOW") {
-		return 1;
-	} else if (priority === 2 || priority === "MEDIUM") {
-		return 3;
-	} else if (priority === 5 || priority === "HIGH") {
-		return 5;
-	} else if (priority === 7 || priority === "URGENT") {
-		return 7;
+	// Convert string numbers to actual numbers if they are valid integers
+	if (typeof priority === "string" && !isNaN(priority)) {
+		priority = parseInt(priority, 10);
+	}
+
+	// Check for valid priority values
+	if (priority === 1 || priority === 3 || priority === 5 || priority === 7) {
+		return priority;
 	} else {
-		return 1;
+		return 1; // Default to LOW priority for invalid inputs
 	}
 }
 
@@ -75,7 +74,7 @@ class Task extends ToDo {
 	_title;
 	_priority;
 
-	constructor(added, title, priority) {
+	constructor(added = todaysDate(), title, priority) {
 		super();
 		this._added = added;
 		this._title = title;
@@ -99,15 +98,18 @@ class Task extends ToDo {
 	}
 }
 
+task = new Task(undefined, "Get Cappuccino", PRIORITY["MEDIUM"]);
+console.log(task);
+
 // Task Example
-task = new Task("Get Cappuccino", PRIORITY["MEDIUM"]); // Creates an instance of a Task (named task)
-task.added = "30/4/2023 12:26:26"; // Checking the 'added' attribute of a Task instance returns the date/time it was added.
-task.title = "Get Cappuccino"; // Checking the 'title' attribute for a Task instance returns the title of the task.'
-task.priority = 3; // Checking the 'priority' attribute for a Task instance returns an integer 3 (Remember MEDIUM == 3).
-task.priority = PRIORITY["URGENT"]; // Setting the 'priority' attribute for a Task instance to URGENT (Remember URGENT == 7).
-task.priority = 7; // Checking the 'priority' attribute for a Task instance returns an integer 7 (Remember URGENT == 7).
-task.priority = "10"; // Setting the 'priority' attribute for a Task instance to the string '10' (an invalid priority).
-task.priority = 1; // Checking the 'priority attribute for a Task instance returns an integer 1 (because '10' was an invalid priority so it defaults to 1).
+// task = new Task("Get Cappuccino", PRIORITY["MEDIUM"]); // Creates an instance of a Task (named task)
+// task.added = "30/4/2023 12:26:26"; // Checking the 'added' attribute of a Task instance returns the date/time it was added.
+// task.title = "Get Cappuccino"; // Checking the 'title' attribute for a Task instance returns the title of the task.'
+// task.priority = 3; // Checking the 'priority' attribute for a Task instance returns an integer 3 (Remember MEDIUM == 3).
+// task.priority = PRIORITY["URGENT"]; // Setting the 'priority' attribute for a Task instance to URGENT (Remember URGENT == 7).
+// task.priority = 7; // Checking the 'priority' attribute for a Task instance returns an integer 7 (Remember URGENT == 7).
+// task.priority = "10"; // Setting the 'priority' attribute for a Task instance to the string '10' (an invalid priority).
+// task.priority = 1; // Checking the 'priority attribute for a Task instance returns an integer 1 (because '10' was an invalid priority so it defaults to 1).
 
 // Leave this code here for the automated tests
 module.exports = {
