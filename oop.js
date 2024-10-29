@@ -79,7 +79,7 @@ class Task extends ToDo {
 		super();
 		this._added = added;
 		this._title = title;
-		this._priority = priority;
+		this._priority = validatePriority(priority);
 	}
 
 	get added() {
@@ -95,7 +95,7 @@ class Task extends ToDo {
 	}
 
 	set priority(priority) {
-		this._priority = priority;
+		this._priority = validatePriority(priority);
 	}
 }
 
