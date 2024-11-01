@@ -1,94 +1,103 @@
 PRIORITY = { LOW: 1, MEDIUM: 3, HIGH: 5, URGENT: 7 };
 
-function validInteger(value) {
-	// value can be a string or a number (integer)
-	const regex = /^[0-9]+$/;
-
+// Function to validate if a value is a non-negative integer
+const validInteger = (value) => {
+	const regex = /^[0-9]+$/; // Regular expression to match non-negative integers
 	const trimmedValue = String(value).trim();
 	return regex.test(trimmedValue) && Number(trimmedValue) >= 0;
-}
+};
 
-function validatePriority(priority) {
-	if (typeof priority === "string" && !isNaN(priority)) {
-		priority = parseInt(priority, 10);
-	}
+// Function to validate priority levels for tasks
+const validatePriority = (priority) => {
+	const validPriorityLevels = [1, 3, 5, 7];
+	// If priority is a string that can be converted to a number, parse it
+	const parsedPriority = typeof priority === "string" && !isNaN(priority) ? parseInt(priority, 10) : priority;
 
-	if (priority === 1 || priority === 3 || priority === 5 || priority === 7) {
-		return priority;
-	} else {
-		return 1;
-	}
-}
+	return validPriorityLevels.includes(parsedPriority) ? parsedPriority : 1;
+};
 
-function todaysDate() {
+// Function to get the current date and time formatted as a string
+const todaysDate = () => {
 	const currentDate = new Date();
 
-	const day = String(currentDate.getDate()).padStart(2, "0");
-	const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-indexed
-	const year = String(currentDate.getFullYear());
-	const hours = String(currentDate.getHours()).padStart(2, "0");
-	const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-	const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+	// Helper function to pad single-digit numbers with leading zeros
+	const pad = (num) => String(num).padStart(2, "0");
+
+	const day = pad(currentDate.getDate());
+	const month = pad(currentDate.getMonth() + 1); // Months are zero-indexed
+	const year = currentDate.getFullYear();
+	const hours = pad(currentDate.getHours());
+	const minutes = pad(currentDate.getMinutes());
+	const seconds = pad(currentDate.getSeconds());
 
 	return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-}
+};
 
+// Class representing a single task
 class Task {
-	_added;
-	_title;
-	_priority;
+	#added;
+	#title;
+	#priority;
 
 	constructor(title, priority) {
-		this._added = todaysDate();
-		this._title = title;
-		this._priority = validatePriority(priority);
+		this.#added = todaysDate();
+		this.#title = title;
+		this.#priority = validatePriority(priority);
 	}
 
 	get added() {
-		return this._added;
+		return this.#added;
 	}
 
 	get title() {
-		return this._title;
+		return this.#title;
 	}
 
 	get priority() {
-		return this._priority;
+		return this.#priority;
 	}
 
-	set priority(priority) {
-		this._priority = validatePriority(priority);
+	set priority(newPriority) {
+		this.#priority = validatePriority(newPriority);
 	}
 }
 
+// Class representing a to-do list
 class ToDo {
 	constructor() {
 		this.tasks = [];
 	}
 
+	// Method to add a task to the list
 	add(task) {
 		this.tasks.push(task);
 		return this.tasks.length;
 	}
 
+	// Method to remove a task by its title
 	remove(title) {
-		const index = this.tasks.findIndex((task) => task.title.toLowerCase() === title.toLowerCase());
+		const index = this.tasks.findIndex((task) => task.title.toLowerCase() === title.toLowerCase()); // Find the index of the task
 		if (index !== -1) {
-			this.tasks.splice(index, 1);
+			this.tasks.splice(index, 1); // Remove the task if found
 			return true;
 		}
 		return false;
 	}
 
+	// Method to list tasks, filtering by priority
 	list(priority = 0) {
-		return this.tasks
-			.filter((task) => priority === 0 || task.priority === priority)
-			.map((task) => [task.added, task.title, task.priority]);
+		const newList = this.tasks
+			.filter((task) => priority === 0 || task.priority === priority) // Filter tasks by priority
+			.map((task) => [task.added, task.title, task.priority]); // Create an array of task details
+		return newList;
 	}
 
+	// Method to find and return a task by its title
 	task(title) {
-		const foundTask = this.tasks.find((task) => task.title.toLowerCase() === title.toLowerCase());
-		if (!foundTask) throw new Error(`Task '${title}' Not Found`);
+		const foundTask = this.tasks.find((task) => task.title.toLowerCase() === title.toLowerCase()); // Search for the task
+		if (!foundTask) {
+			throw new Error(`Task '${title}' Not Found`);
+		}
 		return foundTask;
 	}
 }
